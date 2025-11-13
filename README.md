@@ -9,7 +9,7 @@ Displays a map using the Google Maps API. The user may then choose where to plac
 
 You can also search for locations using the search box, which uses the Google Maps Geocoding API.
 
-Supports SilverStripe 4
+Supports Silverstripe 4 and 5
 
 ## Usage
 
@@ -114,3 +114,9 @@ To get a Google Maps JS API key please see [the official docs](https://developer
 
 To use the search box to find locations on the map, you'll need to have enabled the Geocoding API as well. Please see
 [the official docs](https://developers.google.com/maps/documentation/javascript/geocoding#GetStarted)
+
+## Notes for Silverstripe 5
+
+- Requires PHP 8.1+ (already enforced in `composer.json`).
+- If your project enables a Content Security Policy (CSP), ensure `https://maps.googleapis.com` and `https://*.gstatic.com` are allowed for `script-src` and `img-src` so Google Maps loads in the CMS.
+- Asset paths use the Silverstripe module resource notation (e.g. `betterbrief/silverstripe-googlemapfield:client/...`). Ensure you’re on a recent `silverstripe/vendor-plugin` compatible with SS5.

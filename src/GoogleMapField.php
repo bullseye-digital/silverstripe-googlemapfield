@@ -19,7 +19,6 @@ use SilverStripe\Forms\TextField;
 use SilverStripe\View\Requirements;
 use SilverStripe\ORM\DataObjectInterface;
 use SilverStripe\Forms\FieldList;
-use SilverStripe\Core\Convert;
 
 class GoogleMapField extends FormField {
 
@@ -68,15 +67,15 @@ class GoogleMapField extends FormField {
 	}
 
 	// Auto generate a name
-	public function getName() {
-		$fieldNames = $this->getOption('field_names');
-		return sprintf(
-			'%s_%s_%s',
-			$this->data->class,
-			$fieldNames['Latitude'],
-			$fieldNames['Longitude']
-		);
-	}
+    public function getName() {
+        $fieldNames = $this->getOption('field_names');
+        return sprintf(
+            '%s_%s_%s',
+            get_class($this->data),
+            $fieldNames['Latitude'],
+            $fieldNames['Longitude']
+        );
+    }
 
 	/**
 	 * Merge options preserving the first level of array keys
@@ -134,10 +133,14 @@ class GoogleMapField extends FormField {
 		);
 
 		if($this->options['show_search_box']) {
+			// Use a unique field name to avoid clashing with other CMS fields
+			// (e.g. AssetAdmin search inputs). The JS hooks this by class, not name.
+			$searchFieldName = $name . '_GoogleMapSearch';
 			$this->children->push(
-				TextField::create('Search')
-				->addExtraClass('googlemapfield-searchfield')
+				TextField::create($searchFieldName)
+				->addExtraClass('googlemapfield-searchfield no-change-track')
 				->setAttribute('placeholder', 'Search for a location')
+				->setAttribute('autocomplete', 'off')
 			);
 		}
 
@@ -179,9 +182,9 @@ class GoogleMapField extends FormField {
 			$gmapsParams['key'] = $key;
 		}
 		$this->extend('updateGoogleMapsParams', $gmapsParams);
-        Requirements::css('betterbrief/silverstripe-googlemapfield: client/css/GoogleMapField.css');
-        Requirements::javascript('betterbrief/silverstripe-googlemapfield: client/js/GoogleMapField.js');
-		Requirements::javascript('//maps.googleapis.com/maps/api/js?' . http_build_query($gmapsParams));
+        Requirements::css('betterbrief/silverstripe-googlemapfield:client/css/GoogleMapField.css');
+        Requirements::javascript('betterbrief/silverstripe-googlemapfield:client/js/GoogleMapField.js');
+        Requirements::javascript('https://maps.googleapis.com/maps/api/js?' . http_build_query($gmapsParams));
 	}
 
 	/**
